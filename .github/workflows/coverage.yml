@@ -49,6 +49,7 @@ jobs:
       - name: Generate summary report
         run: |
           lcov --summary lcov.info > coverage-report/summary.md
+          sed -i '1d' coverage-report/summary.md
           sed -i '/Message summary:/,$d' coverage-report/summary.md
 
       - name: Upload coverage report artifact
