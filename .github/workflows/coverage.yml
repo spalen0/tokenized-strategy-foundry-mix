@@ -10,7 +10,7 @@ env:
   FOUNDRY_PROFILE: ci
 
 jobs:
-  check:
+  coverage:
     strategy:
       fail-fast: true
 
