@@ -44,11 +44,11 @@ jobs:
         run: lcov --remove lcov.info 'src/test/**' --output-file lcov.info
 
       - name: Generate coverage report
-        run: genhtml --ignore-errors inconsistent -o coverage-report lcov.info
+        run: genhtml -o coverage-report lcov.info
 
       - name: Generate summary report
         run: |
-          lcov --ignore-errors inconsistent --summary lcov.info > coverage-report/summary.md
+          lcov --summary lcov.info > coverage-report/summary.md
           sed -i '' '/Message summary:/,$d' coverage-report/summary.md
 
       - name: Upload coverage report artifact
