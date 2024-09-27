@@ -1,10 +1,11 @@
 name: coverage
 
 on:
-  workflow_run:
-    workflows: ["test"]
-    types:
-      - completed
+  push:
+    branches:
+    - master
+    - develop
+  pull_request:
 
 env:
   FOUNDRY_PROFILE: ci
@@ -36,33 +37,30 @@ jobs:
           forge coverage --report lcov -vvv --fork-url ${{ secrets.ETH_RPC_URL }}
         id: coverage
 
-      - name: Setup .NET Core # Required to execute ReportGenerator
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
-          dotnet-quality: 'ga'
+      - name: Install lcov
+        run: sudo apt-get -y install lcov
 
-      - name: ReportGenerator
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.9
-        with:
-          reports: lcov.info
-          targetdir: coveragereport
-          reporttypes: HtmlInline;MarkdownSummaryGithub
-          filefilters: -src/test/**
+      - name: Generate coverage report
+        run: genhtml --ignore-errors inconsistent --exclude 'src/test/**' -o coverage-report lcov.info
+
+      - name: Generate summary report
+        run: |
+          lcov --ignore-errors inconsistent --summary lcov.info > coverage-report/summary.md
+          sed -i '' '/Message summary:/,$d' coverage-report/summary.md
 
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v4
         with:
           name: CoverageReport # Artifact name
-          path: coveragereport # Directory containing files to upload
+          path: coverage-report # Directory containing files to upload
 
-      - name: Add comment to PR # Only applicable if 'MarkdownSummaryGithub' or one of the other Markdown report types is generated
+      - name: Add comment to PR
         if: github.event_name == 'pull_request' && env.GH_TOKEN != ''
-        run: gh pr comment $PR_NUMBER --body-file coveragereport/SummaryGithub.md # Adjust path and filename if necessary
+        run: gh pr comment $PR_NUMBER --body-file coverage-report/summary.md
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
 
-      - name: Publish coverage in build summary # Only applicable if 'MarkdownSummaryGithub' or one of the other Markdown report types is generated
-        run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY # Adjust path and filename if necessary
+      - name: Publish coverage in build summary
+        run: cat coverage-report/summary.md >> $GITHUB_STEP_SUMMARY
         shell: bash
