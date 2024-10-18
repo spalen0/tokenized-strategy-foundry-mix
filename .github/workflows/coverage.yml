@@ -32,7 +32,7 @@ jobs:
         run: sudo apt-get -y install lcov
 
       - name: Run generate html report
-        run: make coverage-html-report
+        run: make coverage-html
 
       - name: Generate summary report
         run: |

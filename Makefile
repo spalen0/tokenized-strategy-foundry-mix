@@ -33,7 +33,7 @@ coverage :; forge coverage --fork-url ${FORK_URL}
 coverage-report :; forge coverage --report lcov --fork-url ${FORK_URL}
 coverage-debug :; forge coverage --report debug --fork-url ${FORK_URL}
 
-coverage-html-report:
+coverage-html:
 	@echo "Running coverage..."
 	forge coverage --report lcov --fork-url ${FORK_URL}
 	@if [ "`uname`" = "Darwin" ]; then \

@@ -97,11 +97,19 @@ To update to a new API version of the TokenizeStrategy you will need to simply r
 
 ### Test Coverage
 
-Run the following command to generate a test coverage report:
+Run the following command to generate a test coverage:
 
 ```sh
 make coverage
 ```
+
+To generate test coverage report in HTML, you need to have installed [`lcov`](https://github.com/linux-test-project/lcov) and run:
+
+```sh
+make coverage-html
+```
+
+The generated report will be in `coverage-report/index.html`.
 
 ### Deployment
 
